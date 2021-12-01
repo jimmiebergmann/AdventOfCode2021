@@ -12,10 +12,8 @@ int64_t solve_part_2(const std::vector<std::string>& values)
 
 int main()
 {
-    const auto input = aoc::read_input<1, std::string>();
-
     aoc::solve_puzzles(
-        input,
+        aoc::read_input<1, std::string>(),
         solve_part_1,
         solve_part_2
     );
