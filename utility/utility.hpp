@@ -20,6 +20,26 @@ namespace aoc
         {}
     };
 
+    std::string time_to_string(std::chrono::nanoseconds microseconds)
+    {
+        const auto ticks = microseconds.count();
+
+        if (ticks < 1000LL)
+        {
+            return std::to_string(ticks) + " nanoseconds";
+        }
+        else if (ticks < 1000'000LL)
+        {
+            return std::to_string(static_cast<double>(ticks) / 1000.0) + " microseconds";
+        }
+        else if (ticks < 1000'000'000LL)
+        {
+            return std::to_string(static_cast<double>(ticks) / 1000'000.0) + " milliseconds";
+        }
+
+        return std::to_string(static_cast<double>(ticks) / 1000'000'000.0) + " seconds";
+    }
+
 
     template<typename TDataType>
     struct input_data
@@ -33,6 +53,9 @@ namespace aoc
     input_data<TDataType> read_input(const bool skip_empty_lines = false)
     {
         const std::string filename = "../inputs/day_" + std::to_string(VDay) + "_input.txt";
+             
+        auto start_time = std::chrono::high_resolution_clock::now();
+        
         std::ifstream file(filename);
         if (!file.is_open())
         {
@@ -69,6 +92,11 @@ namespace aoc
             }
         }
 
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+        std::string convert_text = std::is_same_v<TDataType, std::string> == false ? " (and converting)" : "";
+        std::cout << "Reading" + convert_text + " input file took " << time_to_string(duration) << "\n";
+
         return { std::move(data), VDay};
     }
 
@@ -85,7 +113,7 @@ namespace aoc
                 throw puzzle_exception("Input data is empty.");
             }
 
-            std::cout << "Day " << input.day << ":\n";
+            std::cout << "Day " << input.day << " results:\n";
             (solve_puzzle(input, ++part, solvers), ...);
         }
         catch (puzzle_exception& e)
@@ -101,13 +129,13 @@ namespace aoc
     template<typename TReturnType, typename TDataType>
     void solve_puzzle(const input_data<TDataType>& input, const size_t part, TReturnType(*solver)(const std::vector<TDataType>&))
     {
-        auto start = std::chrono::high_resolution_clock::now();
+        auto start_time = std::chrono::high_resolution_clock::now();
         auto result = solver(input.data);
-        auto end = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
 
-        std::cout << "Part " << part << " result: " << result << "    time: " << duration.count() << " us" << "\n";
-    }
+        std::cout << "Part " << part << " result: " << result << "    time: " << time_to_string(duration) << "\n";
+    }   
 }
 
 #endif
