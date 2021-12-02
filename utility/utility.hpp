@@ -50,7 +50,7 @@ namespace aoc
 
 
     template<size_t VDay, typename TDataType>
-    input_data<TDataType> read_input(const bool skip_empty_lines = false)
+    input_data<TDataType> read_input(const bool skip_empty_lines = false, const bool split_words = false)
     {
         const std::string filename = "../inputs/day_" + std::to_string(VDay) + "_input.txt";
              
@@ -65,10 +65,20 @@ namespace aoc
 
         std::vector<TDataType> data;
 
-        std::string line;
+        
         while (!file.eof())
         {
-            std::getline(file, line);
+            std::string line;
+
+            if (split_words)
+            {
+                file >> line;
+            }
+            else
+            {
+                std::getline(file, line);
+            }
+            
             if (line.empty() && skip_empty_lines)
             {
                 continue;
@@ -76,7 +86,7 @@ namespace aoc
 
             if constexpr (std::is_same_v<TDataType, std::string> == true)
             {
-                data.push_back(line);
+                data.push_back(std::move(line));
             }
             else
             {
