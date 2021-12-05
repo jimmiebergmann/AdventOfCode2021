@@ -1,6 +1,6 @@
 # 🎅 Advent of Code 2021 🎄 
  
-Advent of Code 2021 C++20 solutions.
+Advent of Code 2021 C++ solutions.
 
 ## How to build
 ``` shell
