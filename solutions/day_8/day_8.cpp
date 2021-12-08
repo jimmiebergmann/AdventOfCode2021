@@ -119,13 +119,28 @@ std::string find_and_erase_expected_token(std::vector<std::string>& possible_tok
     return "";
 }
 
+int32_t build_output_number(std::array<std::string, 10>& tokens, const OutputValues& output_values)
+{
+    int32_t result = 0;
+    for (const auto& output_value : output_values)
+    {
+    	const auto it = std::find_if(tokens.begin(), tokens.end(), [&](auto token)
+            {
+                return token == output_value;
+            });
+
+        result *= 10;
+        result += static_cast<int32_t>(it - tokens.begin());
+    }
+
+    return result;
+}
+
 int32_t count_part_2_display(Display& display)
 {
-    using NumberTokens = std::array<std::string, 10>;
-
-    std::vector<std::string> posibilities_2_3_5; // Length of 5
-    std::vector<std::string> posibilities_0_6_9; // Length of 6
-    NumberTokens found_tokens;
+    std::vector<std::string> possibilities_2_3_5; // Length of 5
+    std::vector<std::string> possibilities_0_6_9; // Length of 6
+    std::array<std::string, 10> found_tokens;
 
     for (auto& signal_pattern : display.signal_patterns)
     {
@@ -135,51 +150,39 @@ int32_t count_part_2_display(Display& display)
 	        case 3: found_tokens[7] = signal_pattern; break; // 7
 	        case 4: found_tokens[4] = signal_pattern; break; // 4
 	        case 7: found_tokens[8] = signal_pattern; break; // 8
-	        case 5: posibilities_2_3_5.push_back(signal_pattern); break;
-	        case 6: posibilities_0_6_9.push_back(signal_pattern); break;
+	        case 5: possibilities_2_3_5.push_back(signal_pattern); break;
+	        case 6: possibilities_0_6_9.push_back(signal_pattern); break;
 	        default: break;
         }
     }
 
-    found_tokens[0] = find_and_erase_expected_token(posibilities_0_6_9, [&](const auto posibility)
+    found_tokens[0] = find_and_erase_expected_token(possibilities_0_6_9, [&](const auto posibility)
         {
             return token_contains(posibility, found_tokens[1]) &&
                 !token_contains(posibility, found_tokens[4]) &&
                 token_contains(posibility, found_tokens[7]);
         });
-    found_tokens[9] = find_and_erase_expected_token(posibilities_0_6_9, [&](const auto posibility)
+    found_tokens[9] = find_and_erase_expected_token(possibilities_0_6_9, [&](const auto posibility)
         {
             return !token_contains(posibility, found_tokens[0]) &&
                 token_contains(posibility, found_tokens[1]) &&
                 token_contains(posibility, found_tokens[4]) &&
                 token_contains(posibility, found_tokens[7]);
         });
-    found_tokens[6] = posibilities_0_6_9.front();
-    found_tokens[5] = find_and_erase_expected_token(posibilities_2_3_5, [&](const auto posibility)
+    found_tokens[6] = possibilities_0_6_9.front();
+    found_tokens[5] = find_and_erase_expected_token(possibilities_2_3_5, [&](const auto posibility)
         {
             return !token_contains(posibility, found_tokens[1]) &&
                 !token_contains(posibility, found_tokens[7]) &&
                 token_contains(found_tokens[6], posibility);
         });
-    found_tokens[3] = find_and_erase_expected_token(posibilities_2_3_5, [&](const auto posibility)
+    found_tokens[3] = find_and_erase_expected_token(possibilities_2_3_5, [&](const auto posibility)
         {
             return token_contains(posibility, found_tokens[1]);
         });
-    found_tokens[2] = posibilities_2_3_5.front();
+    found_tokens[2] = possibilities_2_3_5.front();
 
-    int32_t final_number = 0;
-    for (const auto& output_value : display.output_values)
-    {
-        auto it = std::find_if(found_tokens.begin(), found_tokens.end(), [&](auto token)
-            {
-                return token == output_value;
-            });
-
-        final_number *= 10;
-        final_number += static_cast<int32_t>(it - found_tokens.begin());
-    }
-
-    return final_number;
+    return build_output_number(found_tokens, display.output_values);
 }
 
 int32_t count_part_2(Displays& displays)
