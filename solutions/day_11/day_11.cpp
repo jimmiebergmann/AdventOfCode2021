@@ -54,24 +54,12 @@ OctopusMap parse_input(const std::vector<std::string>& values)
     return map;
 }
 
-void print_map(const OctopusMap& map)
-{
-	for(const auto& row : map.data)
-	{
-        for (const auto& octopus : row)
-        {
-            std::cout << octopus.energy;
-        }
-        std::cout << "\n";
-	}
-}
-
 bool is_inside_map(const OctopusMap& map, Vector point)
 {
     return point.x >= 0 && point.y >= 0 && point.x < map.size.x && point.y < map.size.y;
 }
 
-size_t part_1_simulate_step(OctopusMap& map)
+size_t simulate_step(OctopusMap& map)
 {
     static const std::array adjacent_offsets = {
         Vector{ -1, -1 }, Vector{ 0, -1 }, Vector{ 1, -1 },
@@ -147,7 +135,7 @@ size_t solve_part_1(const std::vector<std::string>& values)
     size_t total_flash_count = 0;
     for(size_t i = 0; i < 100; i++)
     {
-        total_flash_count += part_1_simulate_step(map);
+        total_flash_count += simulate_step(map);
     }
 
     return total_flash_count;
@@ -175,7 +163,7 @@ size_t solve_part_2(const std::vector<std::string>& values)
 
     for (size_t i = 0; ; i++)
     {
-        part_1_simulate_step(map);
+        simulate_step(map);
 
         if(count_map_flashes(map) == (map.size.x * map.size.y))
         {
