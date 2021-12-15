@@ -98,9 +98,37 @@ size_t solve_part_1(const std::vector<std::string>& values)
     return find_lowest_risk(map, start, end);
 }
 
+Array2ui8 enlarge_map(const Array2ui8& array2)
+{
+    auto new_array = make_array2<uint8_t>(array2.size * 5);
+
+    for(size_t ys = 0; ys < 5; ys++)
+    {
+        for (size_t y = 0; y < array2.size.y; y++)
+        {
+            size_t target_y = y + (ys * array2.size.y);
+
+            for (size_t xs = 0; xs < 5; xs++)
+            {
+                for (size_t x = 0; x < array2.size.x; x++)
+                {
+                    size_t target_x = x + (xs * array2.size.x);
+                    new_array.data[target_y][target_x] = (((array2.data[y][x]) + (ys + xs) - 1) % 9) + 1;
+                }
+            }
+        }
+    }
+
+    return new_array;
+}
+
 size_t solve_part_2(const std::vector<std::string>& values)
 {
-    return 0;
+    const auto map = parse_input(values);
+    const auto enlarged_map = enlarge_map(map);
+    const auto start = Vector2i32{ 0, 0 };
+    const auto end = Vector2i32{ static_cast<int32_t>(enlarged_map.size.x - 1), static_cast<int32_t>(enlarged_map.size.y - 1) };
+    return find_lowest_risk(enlarged_map, start, end);
 }
 
 int main() {

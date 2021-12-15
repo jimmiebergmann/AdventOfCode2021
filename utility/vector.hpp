@@ -21,6 +21,11 @@ namespace aoc
             return Vector2{ x - rhs.x, y - rhs.y };
         }
 
+        Vector2 operator *(const T& scalar) const
+        {
+            return Vector2{ x * scalar, y * scalar };
+        }
+
         bool operator ==(const Vector2& rhs) const
         {
             return x == rhs.x && y == rhs.y;
